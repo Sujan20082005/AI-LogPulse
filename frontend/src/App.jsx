@@ -35,19 +35,19 @@ function App() {
   const loadData = () => {
     setLastUpdated(new Date());
   axios
-    .get("http://ai-logpulse.onrender.com/dashboard")
+    .get("https://ai-logpulse.onrender.com/dashboard")
     .then((response) => {
       setDashboard(response.data);
     });
 
   axios
-    .get("http://ai-logpulse.onrender.com/logs")
+    .get("https://ai-logpulse.onrender.com/logs")
     .then((response) => {
       setLogs(response.data);
     });
 
   axios
-    .get("http://ai-logpulse.onrender.com/dashboard/errors")
+    .get("https://ai-logpulse.onrender.com/dashboard/errors")
     .then((response) => {
       setCriticalLogs(response.data);
     });
@@ -64,7 +64,7 @@ useEffect(() => {
 
   const addLog = () => {
   axios
-    .post("http://ai-logpulse.onrender.com/logs", {
+    .post("https://ai-logpulse.onrender.com/logs", {
       level,
       message,
     })
