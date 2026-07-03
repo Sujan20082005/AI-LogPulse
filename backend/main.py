@@ -22,6 +22,7 @@ class Log(Base):
     message = Column(String)
     risk = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
