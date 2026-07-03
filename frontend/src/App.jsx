@@ -35,19 +35,19 @@ function App() {
   const loadData = () => {
     setLastUpdated(new Date());
   axios
-    .get("http://127.0.0.1:8000/dashboard")
+    .get("http://ai-logpulse.onrender.com/dashboard")
     .then((response) => {
       setDashboard(response.data);
     });
 
   axios
-    .get("http://127.0.0.1:8000/logs")
+    .get("http://ai-logpulse.onrender.com/logs")
     .then((response) => {
       setLogs(response.data);
     });
 
   axios
-    .get("http://127.0.0.1:8000/dashboard/errors")
+    .get("http://ai-logpulse.onrender.com/dashboard/errors")
     .then((response) => {
       setCriticalLogs(response.data);
     });
@@ -64,7 +64,7 @@ useEffect(() => {
 
   const addLog = () => {
   axios
-    .post("http://127.0.0.1:8000/logs", {
+    .post("http://ai-logpulse.onrender.com/logs", {
       level,
       message,
     })
