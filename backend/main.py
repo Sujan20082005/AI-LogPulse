@@ -23,7 +23,7 @@ class Log(Base):
     risk = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
 Base.metadata.create_all(bind=engine)
-
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
