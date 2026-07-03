@@ -65,6 +65,7 @@ def create_log(log: LogRequest):
         "message": "Log stored successfully",
         "risk": risk
     }
+db.close()
 
 @app.get("/logs")
 def get_logs():
@@ -84,6 +85,7 @@ def get_logs():
         })
 
     return result
+db.close()
 
 @app.get("/dashboard")
 def dashboard():
