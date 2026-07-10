@@ -14,7 +14,6 @@ import {
 } from "chart.js";
 
 import { Pie, Bar } from "react-chartjs-2";
-import ChatBot from "./components/ChatBot";
 
 ChartJS.register(
   ArcElement,
@@ -121,6 +120,9 @@ useEffect(() => {
 });
   return (
   <div className="dashboard">
+    <h1 style={{ color: "red", fontSize: "50px" }}>
+  TEST CHATBOT
+</h1>
       <div className="header">
 
   <div className="logo-section">

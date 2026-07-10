@@ -56,11 +56,24 @@ const res = await axios.post(
   return (
     <>
       <button
-        className="chat-toggle"
-        onClick={() => setOpen(!open)}
-      >
-        💬
-      </button>
+  className="chat-toggle"
+  onClick={() => setOpen(!open)}
+  style={{
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    width: "80px",
+    height: "80px",
+    background: "red",
+    color: "white",
+    fontSize: "30px",
+    zIndex: 99999,
+    borderRadius: "50%",
+    border: "none"
+  }}
+>
+  💬
+</button>
 
       {open && (
         <div className="chat-window">
