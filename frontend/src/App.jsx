@@ -120,9 +120,6 @@ useEffect(() => {
 });
   return (
   <div className="dashboard">
-    <h1 style={{ color: "red", fontSize: "50px" }}>
-  TEST CHATBOT
-</h1>
       <div className="header">
 
   <div className="logo-section">
