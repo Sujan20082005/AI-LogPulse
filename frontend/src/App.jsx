@@ -1,3 +1,4 @@
+import ChatBot from "./components/ChatBot";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
@@ -13,6 +14,7 @@ import {
 } from "chart.js";
 
 import { Pie, Bar } from "react-chartjs-2";
+import ChatBot from "./components/ChatBot";
 
 ChartJS.register(
   ArcElement,
@@ -380,6 +382,7 @@ useEffect(() => {
     React | FastAPI • PostgreSQL • Chart.js
   </p>
 </footer>
+<ChatBot />
     </div>
   );
 }

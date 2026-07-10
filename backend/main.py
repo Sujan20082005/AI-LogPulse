@@ -1,3 +1,5 @@
+from chatbot import ask_ai
+from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from ml.anomaly_detector import detect_anomaly
 from fastapi import FastAPI
@@ -6,6 +8,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime
 
+load_dotenv()
 import os
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -13,6 +16,9 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
+
+class ChatRequest(BaseModel):
+    message: str
 
 class Log(Base):
     __tablename__ = "logs"
@@ -49,43 +55,50 @@ def home():
 def create_log(log: LogRequest):
     db = SessionLocal()
 
-    risk = detect_anomaly(log.level)
+    try:
+        risk = detect_anomaly(log.level)
 
-    new_log = Log(
-        level=log.level,
-        message=log.message,
-        risk=risk
-    )
+        new_log = Log(
+            level=log.level,
+            message=log.message,
+            risk=risk
+        )
 
-    db.add(new_log)
-    db.commit()
+        db.add(new_log)
+        db.commit()
 
-    return {
-        "status": "success",
-        "message": "Log stored successfully",
-        "risk": risk
-    }
-db.close()
+        return {
+            "status": "success",
+            "message": "Log stored successfully",
+            "risk": risk
+        }
+
+    finally:
+        db.close()
+
 
 @app.get("/logs")
 def get_logs():
     db = SessionLocal()
 
-    logs = db.query(Log).all()
+    try:
+        logs = db.query(Log).all()
 
-    result = []
+        result = []
 
-    for log in logs:
-        result.append({
-            "id": log.id,
-            "level": log.level,
-            "message": log.message,
-            "risk": log.risk,
-            "timestamp": str(log.timestamp)
-        })
+        for log in logs:
+            result.append({
+                "id": log.id,
+                "level": log.level,
+                "message": log.message,
+                "risk": log.risk,
+                "timestamp": str(log.timestamp)
+            })
 
-    return result
-db.close()
+        return result
+
+    finally:
+        db.close()
 
 @app.get("/dashboard")
 def dashboard():
@@ -127,3 +140,17 @@ def critical_errors():
 
     finally:
         db.close()
+
+@app.post("/chat")
+def chat(data: ChatRequest):
+    try:
+        reply = ask_ai(data.message)
+
+        return {
+            "reply": reply
+        }
+
+    except Exception as e:
+        return {
+            "reply": str(e)
+        }
