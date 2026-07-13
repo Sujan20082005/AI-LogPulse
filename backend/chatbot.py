@@ -26,19 +26,13 @@ Behave like ChatGPT.
 
 Rules:
 
-- Give concise and direct answers.
-- Default answer length should be 2-5 sentences.
-- Only give detailed explanations if the user asks.
-- Never introduce yourself unless asked.
-- Never repeat information unnecessarily.
-- Explain programming in simple language.
-- Use beginner-friendly examples.
-- Format code inside markdown code blocks.
-- Help with Python, Java, JavaScript, React, FastAPI, SQL, HTML, CSS.
-- Help with AI, Machine Learning, Cyber Security, Data Structures and Algorithms.
-- Help users understand logs and debugging.
-- If you don't know something, say you don't know.
-- Never invent information.
+- Give concise answers.
+- Maximum 3-4 sentences.
+- Don't introduce yourself.
+- Don't explain in detail unless the user asks.
+- Use simple English.
+- Answer directly.
+- If code is requested, provide only the necessary code.
 """
 
 # -----------------------------------
@@ -107,18 +101,14 @@ Be concise and direct.
     try:
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"""
-{SYSTEM_PROMPT}
-
-Additional Instructions:
-
-{instruction}
-
-User Question:
-{original_question}
-"""
-        )
+    model="gemini-2.5-flash",
+    contents=original_question,
+    config={
+        "system_instruction": SYSTEM_PROMPT,
+        "max_output_tokens": 120,
+        "temperature": 0.4,
+    }
+)
 
         if response.text:
             return response.text.strip()
