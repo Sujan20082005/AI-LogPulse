@@ -1,18 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./ChatBot.css";
 
 function ChatBot() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       sender: "bot",
       text: "👋 Hi! I'm AI LogPulse Assistant. Ask me anything.",
     },
   ]);
-  const [loading, setLoading] = useState(false);
 
+  const bottomRef = useRef(null);
+
+  // -------------------------------
+  // Load chat history
+  // -------------------------------
+  useEffect(() => {
+    const saved = localStorage.getItem("chat_history");
+
+    if (saved) {
+      setMessages(JSON.parse(saved));
+    }
+  }, []);
+
+  // -------------------------------
+  // Save chat history
+  // -------------------------------
+  useEffect(() => {
+    localStorage.setItem(
+      "chat_history",
+      JSON.stringify(messages)
+    );
+  }, [messages]);
+
+  // -------------------------------
+  // Auto scroll
+  // -------------------------------
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
+
+  // -------------------------------
+  // Clear Chat
+  // -------------------------------
+  const newChat = () => {
+    setMessages([
+      {
+        sender: "bot",
+        text: "👋 Hi! I'm AI LogPulse Assistant. Ask me anything.",
+      },
+    ]);
+  };
+
+  // -------------------------------
+  // Send Message
+  // -------------------------------
   const sendMessage = async () => {
     if (!message.trim()) return;
 
@@ -22,65 +70,82 @@ function ChatBot() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+
+    const currentMessage = message;
+
+    setMessage("");
+
     setLoading(true);
 
     try {
-const res = await axios.post(
-  "https://ai-logpulse.onrender.com/chat",
-  {
-    message,
-  }
-);
+      const response = await axios.post(
+        "https://ai-logpulse.onrender.com/chat",
+        {
+          message: currentMessage,
+        }
+      );
 
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: res.data.reply,
+          text: response.data.reply,
         },
       ]);
-    } catch (err) {
+    } catch (error) {
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: "❌ Backend is not reachable.",
+          text:
+            "❌ Unable to connect to AI server. Please try again.",
         },
       ]);
     }
 
-    setMessage("");
     setLoading(false);
   };
 
   return (
     <>
+      {/* Floating Button */}
+
       <button
-  className="chat-toggle"
-  onClick={() => setOpen(!open)}
-  style={{
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    width: "80px",
-    height: "80px",
-    background: "red",
-    color: "white",
-    fontSize: "30px",
-    zIndex: 99999,
-    borderRadius: "50%",
-    border: "none"
-  }}
->
-  💬
-</button>
+        className="chat-toggle"
+        onClick={() => setOpen(!open)}
+      >
+        💬
+      </button>
+
+      {/* Chat Window */}
 
       {open && (
         <div className="chat-window">
 
+          {/* Header */}
+
           <div className="chat-header">
-            AI LogPulse Assistant
+
+            <div>
+
+              <h3>🤖 AI LogPulse Assistant</h3>
+
+              <small>
+                Powered by Gemini 2.5 Flash
+              </small>
+
+            </div>
+
+            <button
+              className="new-chat-btn"
+              onClick={newChat}
+            >
+              New Chat
+            </button>
+
           </div>
+
+          {/* Messages */}
 
           <div className="chat-body">
 
@@ -98,12 +163,15 @@ const res = await axios.post(
             ))}
 
             {loading && (
-              <div className="bot-message">
-                Thinking...
+              <div className="bot-message typing">
+                🤖 AI is thinking...
               </div>
             )}
 
+            <div ref={bottomRef}></div>
+
           </div>
+                    {/* Input Area */}
 
           <div className="chat-input">
 
@@ -114,12 +182,17 @@ const res = await axios.post(
               onChange={(e) =>
                 setMessage(e.target.value)
               }
-              onKeyDown={(e) =>
-                e.key === "Enter" && sendMessage()
-              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
             />
 
-            <button onClick={sendMessage}>
+            <button
+              className="send-btn"
+              onClick={sendMessage}
+            >
               ➤
             </button>
 
@@ -127,6 +200,7 @@ const res = await axios.post(
 
         </div>
       )}
+
     </>
   );
 }
